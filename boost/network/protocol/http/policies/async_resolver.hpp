@@ -46,7 +46,7 @@ struct async_resolver : std::enable_shared_from_this<async_resolver<Tag> > {
   std::shared_ptr<boost::asio::io_service::strand> resolver_strand_;
 
   explicit async_resolver(bool cache_resolved)
-      : cache_resolved_(cache_resolved), endpoint_cache_(), clear_cache_(false) {}
+      : cache_resolved_(cache_resolved), clear_cache_(false), endpoint_cache_() {}
 
   void resolve(resolver_type &resolver_, string_type const &host,
                std::uint16_t port, resolve_completion_function once_resolved) {
