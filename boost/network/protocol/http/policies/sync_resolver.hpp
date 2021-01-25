@@ -27,7 +27,7 @@ struct sync_resolver {
   typedef std::pair<resolver_iterator, resolver_iterator>
       resolver_iterator_pair;
 
-  void clear_resolved_cache() { clear_cache_ = true; }
+  void clear_resolved_cache() { clear_cache_.store(true); }
 
  protected:
   typedef typename string<Tag>::type string_type;
@@ -35,7 +35,7 @@ struct sync_resolver {
       resolved_cache;
   resolved_cache endpoint_cache_;
   bool cache_resolved_;
-  bool clear_cache_;
+  std::atomic<bool> clear_cache_;
 
   explicit sync_resolver(bool cache_resolved)
       : cache_resolved_(cache_resolved), clear_cache_(false) {}
@@ -44,8 +44,7 @@ struct sync_resolver {
                                  string_type  /*unused*/const& hostname,
                                  string_type const& port) {
     if (cache_resolved_) {
-      if (clear_cache_) {
-        clear_cache_ = false;
+      if (clear_cache_.exchange(false)) {
         endpoint_cache_.clear();
 	  }
       typename resolved_cache::iterator cached_iterator =
